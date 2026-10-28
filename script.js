@@ -1,6 +1,11 @@
 const list = document.getElementById('star-list');
 
 async function fetchStarredRepos() {
+  if (!list) {
+    console.error('The star-list element was not found in the document.');
+    return;
+  }
+
   try {
     const response = await fetch('events.json');
 
@@ -17,43 +22,77 @@ async function fetchStarredRepos() {
 }
 
 function renderRepos(repos) {
-  if (!Array.isArray(repos) || repos.length === 0) {
+  if (!list) {
+    return;
+  }
+
+  const safeRepos = Array.isArray(repos) ? repos.filter((repo) => repo && typeof repo === 'object' && repo.repo && repo.name) : [];
+
+  if (safeRepos.length === 0) {
     list.innerHTML = '<li class="star-item"><p class="repo-description">No starred repositories yet.</p></li>';
     return;
   }
 
-  const items = repos.map((repo) => {
+  const items = safeRepos.map((repo) => {
     const languageColor = getLanguageColor(repo.language);
-    const date = new Date(repo.created_at).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    const formattedDate = formatDate(repo.created_at);
+    const repoName = escapeHtml(repo.name);
+    const repoDescription = escapeHtml(repo.description || 'No description provided.');
+    const repoLanguage = escapeHtml(repo.language || 'Unknown');
+    const starCount = Number.isFinite(Number(repo.stars)) ? formatCount(Number(repo.stars)) : '0';
+    const repoUrl = `https://github.com/${escapeHtml(repo.repo)}`;
 
     return `
       <li class="star-item">
-        <span class="star-badge" aria-label="Starred"></span>
+        <span class="star-badge" aria-hidden="true"></span>
         <div class="repo-details">
           <h2 class="repo-name">
-            <a href="https://github.com/${repo.repo}" target="_blank" rel="noreferrer">
-              ${repo.name}
+            <a href="${repoUrl}" target="_blank" rel="noopener noreferrer">
+              ${repoName}
             </a>
           </h2>
-          <p class="repo-description">${repo.description || 'No description provided.'}</p>
+          <p class="repo-description">${repoDescription}</p>
           <div class="repo-meta">
-            <span><span class="language-dot" style="--language-color: ${languageColor};"></span>${repo.language || 'Unknown'}</span>
-            <span>Starred on ${date}</span>
+            <span><span class="language-dot" style="--language-color: ${languageColor};"></span>${repoLanguage}</span>
+            <span>Starred on ${formattedDate}</span>
           </div>
         </div>
         <div class="star-count" aria-label="Star count">
-          <span>★</span>
-          <span>${formatCount(repo.stars)}</span>
+          <span aria-hidden="true">★</span>
+          <span>${starCount}</span>
         </div>
       </li>
     `;
   });
 
   list.innerHTML = items.join('');
+}
+
+function formatDate(value) {
+  if (!value) {
+    return 'Unknown date';
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return 'Unknown date';
+  }
+
+  return parsed.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (character) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[character]));
 }
 
 function formatCount(value) {
@@ -66,7 +105,7 @@ function getLanguageColor(language) {
     TypeScript: '#3178c6',
     CSS: '#563d7c',
     Python: '#3572A5',
-    C++: '#f34b7d',
+    'C++': '#f34b7d',
     Go: '#00ADD8',
     Rust: '#dea584',
     Java: '#b07219',

@@ -1,0 +1,42 @@
+[
+  {
+    "type": "WatchEvent",
+    "actor": "Your Name",
+    "repo": "microsoft/vscode",
+    "name": "microsoft/vscode",
+    "description": "Visual Studio Code",
+    "language": "TypeScript",
+    "stars": 212000,
+    "created_at": "2024-10-15T09:30:00Z"
+  },
+  {
+    "type": "WatchEvent",
+    "actor": "Your Name",
+    "repo": "vercel/next.js",
+    "name": "vercel/next.js",
+    "description": "The React framework for the web.",
+    "language": "JavaScript",
+    "stars": 130000,
+    "created_at": "2024-09-22T11:45:00Z"
+  },
+  {
+    "type": "WatchEvent",
+    "actor": "Your Name",
+    "repo": "tailwindlabs/tailwindcss",
+    "name": "tailwindlabs/tailwindcss",
+    "description": "A utility-first CSS framework for rapid UI development.",
+    "language": "CSS",
+    "stars": 92000,
+    "created_at": "2024-08-04T13:00:00Z"
+  },
+  {
+    "type": "WatchEvent",
+    "actor": "Your Name",
+    "repo": "tensorflow/tensorflow",
+    "name": "tensorflow/tensorflow",
+    "description": "An open source machine learning framework.",
+    "language": "C++",
+    "stars": 191000,
+    "created_at": "2024-07-18T08:15:00Z"
+  }
+]
